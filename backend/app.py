@@ -8,10 +8,11 @@ import requests
 
 app = Flask(__name__)
 CORS(app)
-
-# API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
-API_URL_FLAN_T5 = "https://api-inference.huggingface.co/models/google/flan-t5-large"
 API_KEY = "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"
+
+
+API_URL_SIMILARITY = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
+API_URL_FLAN_T5 = "https://api-inference.huggingface.co/models/google/flan-t5-large"
 API_URL_KEYPHRASE = "https://api-inference.huggingface.co/models/ml6team/keyphrase-extraction-distilbert-inspec"
 
 
@@ -72,26 +73,23 @@ def compare():
     # Calculate missing phrases
     missing_phrases = [phrase for phrase in job_desc_keyphrases if phrase not in cv_keyphrases]
 
+    similarity_payload = {
+        "inputs": [job_description, cv_info]
+    }
+    
+    similarity_response = query_huggingface_api(API_URL_SIMILARITY, similarity_payload)
+
+    if "error" in similarity_response:
+        return jsonify({"error": similarity_response["error"]}), 500
+
+    # Example: Extract similarity score or embeddings (if the model returns embeddings, you can calculate similarity separately)
+    similarity_score = similarity_response[0]  # This might vary depending on the exact API response
+    print("Similarity score:", similarity_score)
 
     prompt = f"""
     The resume is missing the following key phrases: {missing_phrases}. 
     Can you provide feedback on how to align the resume with the job description?  give me a paragraph.
     """
-
-
-    # return jsonify({
-    #     "job_desc_keyphrases": job_desc_keyphrases,
-    #      "cv_keyphrases": cv_keyphrases,
-    #     "missing_phrases": missing_phrases
-    # }), 200 
-
-
-    # prompt = f"""
-    # The job description includes the following key phrases: {job_desc_keyphrases}. 
-    # Compare this with the resume, which includes the following key phrases: {cv_keyphrases}. 
-    # Identify which key phrases from the job description are not mentioned in the resume.
-    # List these missing phrases clearly.
-    # """
 
 
     flan_t5_payload = {
