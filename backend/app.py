@@ -22,6 +22,7 @@ def extract_text_from_pdf(pdf_file):
     except Exception as e:
         return str(e)
 
+
 def parse(text):
     keywords = [
         "work experience", "work", "education", "experience", 

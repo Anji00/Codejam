@@ -1,6 +1,79 @@
 .App {
   text-align: center;
 }
+/*
+@keyframes glowing {
+  0% {
+    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffaa00, 0 0 30px #ffaa00, 0 0 40px #ffaa00, 0 0 50px #ffaa00, 0 0 60px #ffaa00;
+  }
+  50% {
+    text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ffaa00, 0 0 40px #ffaa00, 0 0 50px #ffaa00, 0 0 70px #ffaa00, 0 0 90px #ffaa00;
+  }
+  100% {
+    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffaa00, 0 0 30px #ffaa00, 0 0 40px #ffaa00, 0 0 50px #ffaa00, 0 0 60px #ffaa00;
+  }
+}
+  */
+
+.glowing-title {
+  color: #f9f9f9; /* Bright yellow */
+  font-size: 3rem; /* Large title size */
+  text-align: center;
+  margin-top: 20px;
+  font-family: 'Poppins', sans-serif;
+  animation: glowing 2s infinite; /* Attach glowing animation */
+}
+
+body {
+  background-color: #1A1A1D !important;
+  color: #ffffff;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+/* Center container */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Style text areas */
+.input-box {
+  width: 90%;
+  max-width: 500px;
+  height: 150px;
+  margin: 10px 0;
+  padding: 10px;
+  border: 2px solid;
+  border-radius: 8px;
+  background-color: #1f1f1f;
+  color: white;
+  font-size: 1rem;
+  resize: none;
+  outline: none;
+}
+
+/* Style button */
+.submit-btn {
+  background-color: #ffcc00;
+  color: #121212;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #ffaa00;
+}
+
 
 .App-logo {
   height: 40vmin;
@@ -36,3 +109,22 @@
     transform: rotate(360deg);
   }
 }
+
+.submit-btn:hover {
+  animation: animate__bounce 1s;
+}
+
+
+/* App.css */
+.title {
+  color: #ff006a; /* Bright yellow for dark mode */
+  font-size: 5rem; /* Make it large */
+  text-align: center; /* Center it horizontally */
+  margin-top: 10px;
+  font-family: 'Poppins', sans-serif; /* Stylish font */
+  animation: glowing 2s infinite; /* Add a glowing animation */
+}
+
+/* Glowing animation */
+
+
