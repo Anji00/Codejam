@@ -18,6 +18,67 @@ API_URL_KEYPHRASE = "https://api-inference.huggingface.co/models/ml6team/keyphra
 
 pipe = pipeline("text2text-generation", model="google/flan-t5-large")
 
+def parse(text):
+    keywords = [
+        "work experience", "work", "education", "skills", "skill", "experience", 
+        "work history", "projects", "technical skills", "soft skills", 
+        "languages", "internships", "activities"
+    ]
+    
+    field = None  # Current section being processed
+    parsed_sections = []  # List to store sections as dictionaries
+    current_section_content = []  # Temporarily stores content for the current section
+
+    # Split the text into lines
+    lines = text.split("\n")
+
+    for line in lines:
+        line_lower = line.lower().strip()
+
+        # Check if the line matches any of the keywords
+        for keyword in keywords:
+            if keyword in line_lower:
+                # Save the current section's content if there is one
+                if field and current_section_content:
+                    parsed_sections.append({field: " ".join(current_section_content)})
+                    current_section_content = []  # Reset the section content
+
+                # Update the field and remove the keyword from the line
+                field = keyword
+                line_lower = line_lower.replace(keyword, "").strip()
+                break  # Move to the next line if keyword is found
+
+        # If a section (`field`) is active, append the cleaned line to the current section
+        if field:
+            if line_lower:  # Only add non-empty lines
+                current_section_content.append(line_lower)
+
+    # Add the last section to the parsed_sections list
+    if field and current_section_content:
+        parsed_sections.append({field: " ".join(current_section_content)})
+
+    return parsed_sections
+
+
+# text = """Work Experience
+# - Software Engineer at XYZ Corp
+# - Developed a machine learning model for fraud detection
+
+# Education
+# - Bachelor of Science in Computer Science
+
+# Skills
+# - Python, Machine Learning, Data Analysis
+
+# Projects
+# - Resume Feedback App: Built a web application using Flask and React"""
+
+# parsed_sections = parse(text)
+# print("Parsed Sections:")
+# for section in parsed_sections:
+#     print(section)
+
+
 
 def query_huggingface_api(api_url, payload):
     headers = {"Authorization": f"Bearer {API_KEY}"}
