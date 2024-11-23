@@ -130,12 +130,30 @@ def compare():
         return jsonify({"error": cv_response["error"]}), 500
     print(cv_response)
 
+    # Calculate missing phrases
+    missing_phrases = [phrase for phrase in job_desc_keyphrases if phrase not in cv_keyphrases]
+
 
     prompt = f"""
-    The job description includes the following key phrases: {job_desc_keyphrases}.
-    The resume includes the following key phrases: {cv_keyphrases}.
-    Compare these and list at least 5 key phrases or skills from the job description that are missing in the resume. Provide your response as a detailed numbered list.
+    The resume is missing the following key phrases: {missing_phrases}. 
+    Can you provide feedback on how to align the resume with the job description?  give me a paragraph.
     """
+
+
+    # return jsonify({
+    #     "job_desc_keyphrases": job_desc_keyphrases,
+    #      "cv_keyphrases": cv_keyphrases,
+    #     "missing_phrases": missing_phrases
+    # }), 200 
+
+
+    # prompt = f"""
+    # The job description includes the following key phrases: {job_desc_keyphrases}. 
+    # Compare this with the resume, which includes the following key phrases: {cv_keyphrases}. 
+    # Identify which key phrases from the job description are not mentioned in the resume.
+    # List these missing phrases clearly.
+    # """
+
 
     flan_t5_payload = {
         "inputs": prompt,
@@ -156,7 +174,8 @@ def compare():
     return jsonify({
         "job_desc_keyphrases": job_desc_keyphrases,
         "cv_keyphrases": cv_keyphrases,
-        "feedback": feedback
+        "feedback": feedback,
+        "missing_phrases": missing_phrases
     }), 200
 
 if __name__ == "__main__":
