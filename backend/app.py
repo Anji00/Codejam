@@ -4,9 +4,10 @@ import PyPDF2
 import requests
 
 app = Flask(__name__)
-CORS(app)
-API_KEY = "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"
+CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
 
+
+API_KEY = "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"
 
 API_URL_SIMILARITY = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
 API_URL_FLAN_T5 = "https://api-inference.huggingface.co/models/google/flan-t5-large"
@@ -22,7 +23,6 @@ def extract_text_from_pdf(pdf_file):
     except Exception as e:
         return str(e)
 
-
 def parse(text):
     keywords = [
         "work experience", "work", "education", "experience", 
@@ -30,7 +30,6 @@ def parse(text):
         "skills", "skill",
         "languages", "internships", "activities"
     ]
-    
     
     field = None  # Current section being processed
     parsed_sections = []  # List to store sections as dictionaries
@@ -81,7 +80,6 @@ def create_sets(parsed_sections):
             else:
                 # Add a new dictionary with the key and value
                 set_parsed_section.append({key: value})
-
     return set_parsed_section
 
 def query_huggingface_api(api_url, payload):
@@ -205,6 +203,11 @@ def compare():
         "missing_phrases": missing_phrases,
         "similarity scores": similarity_list
     }), 200
-
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    return response
 if __name__ == "__main__":
-    app.run(debug=True)
+     app.run(debug=True, host='0.0.0.0', port=5000)

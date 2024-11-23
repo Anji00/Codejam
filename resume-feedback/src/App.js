@@ -13,7 +13,7 @@ function App() {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append("resume_text", resumeText);
+      formData.append("cv_info", resumeText);
       formData.append("job_desc", jobDesc);
 
       const response = await axios.post("http://localhost:5000/analyze", formData);
@@ -23,7 +23,6 @@ function App() {
       alert("Failed to get feedback. Please try again.");
     }
   };
-
 
   return (
     <div className="container animate__animated animate__fadeIn">
