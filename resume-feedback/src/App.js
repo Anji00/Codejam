@@ -1,5 +1,8 @@
+import './App.css';
 import React, { useState } from "react";
 import axios from "axios";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
   const [resumeText, setResumeText] = useState("");
@@ -23,20 +26,24 @@ function App() {
 
 
   return (
-    <div>
-      <h1>Resume Feedback</h1>
+    <div className="container animate__animated animate__fadeIn">
+
+      {/* Existing Content */}
+      <h1 className="display-5 fw-bold text-white">Perfect Pitch</h1>
       <form onSubmit={handleSubmit}>
         <textarea
+          className="input-box"
           placeholder="Paste your resume text here..."
           value={resumeText}
           onChange={(e) => setResumeText(e.target.value)}
         />
         <textarea
+          className="input-box"
           placeholder="Paste the job description here..."
           value={jobDesc}
           onChange={(e) => setJobDesc(e.target.value)}
         />
-        <button type="submit">Get Feedback</button>
+        <button className="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold" type="submit">Get Feedback</button>
       </form>
       {feedback && (
         <div>
@@ -47,5 +54,6 @@ function App() {
     </div>
   );
 }
+  
 
 export default App;

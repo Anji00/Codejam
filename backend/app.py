@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-# import wolframalpha
 from transformers import pipeline
-#import openai
 import os
+from docx import Document
+import PyPDF2
 import requests
 
 app = Flask(__name__)
@@ -16,6 +16,7 @@ API_URL_KEYPHRASE = "https://api-inference.huggingface.co/models/ml6team/keyphra
 
 
 pipe = pipeline("text2text-generation", model="google/flan-t5-large")
+
 
 def parse(text):
     keywords = [
@@ -72,10 +73,10 @@ def parse(text):
 # Projects
 # - Resume Feedback App: Built a web application using Flask and React"""
 
-# parsed_sections = parse(text)
-# print("Parsed Sections:")
-# for section in parsed_sections:
-#     print(section)
+parsed_sections = parse(text)
+print("Parsed Sections:")
+for section in parsed_sections:
+    print(section)
 
 
 
