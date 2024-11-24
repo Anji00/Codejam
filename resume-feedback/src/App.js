@@ -187,28 +187,28 @@ function App() {
        
       </form>
       {feedback && (
-        <div style={{ color: 'white' }}>
+        <div style={{ color: 'white', marginLeft:'300px', marginRight: '300px'}}>
           <h2>Feedback:</h2>
           <p>You can incorporate the following line to match the keywords
-            in the job description better: </p>
+            in the job description better ajhiduegwliuqheiuhhujeiwqyiliqrui2euiew2hdliu: </p>
             <p>{feedback.replace(/[\[\]"]/g, '').trim()}</p>
         </div>
       )}
       {missing_phrases && missing_phrases.length > 0 && (
-  <div style={{ color:'white'}}>
+  <div style={{ color:'white', marginLeft:'300px', marginRight: '300px'}}>
     <p>
       More specifically, these are the keywords you should think about incorporating somehow into your resume to 
       better match the job description: 
     </p>
 
     <ul>
-      <div style={{textAlign: 'center'}}>
+      <div style={{}}>
       {missing_phrases.map((phrase, index) => (
         <li key={index}>{phrase}</li>
       ))}
       </div>
     </ul>
-    <div style={{textAlign: 'center'}}>
+    <div style={{}}>
     <p>Here is a detailed graphical analysis that shows how each section of your resume matches the requirements of this position: </p>
     </div>
   </div>
