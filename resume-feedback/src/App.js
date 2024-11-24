@@ -2,6 +2,10 @@ import './App.css';
 import React, { useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 
 function App() {
@@ -29,10 +33,44 @@ function App() {
     });
       setSimilarity(response.data.similarity_list);
       setFeedback(response.data.feedback);
+      console.log(similarity_list);
     } catch (error) {
       console.error("Error:", error);
       alert("Failed to get feedback. Please try again.");
     }
+  };
+  // Prepare data for the chart
+  const chartData = {
+    labels: similarity_list.map((item) => Object.keys(item)[0]), // Extract keys (categories)
+    datasets: [
+      {
+        label: 'Similarity Percentage',
+        data: similarity_list.map((item) => (Object.values(item)[0] * 100).toFixed(2)), // Convert scores to percentages
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100, // Max percentage
+        title: {
+          display: true,
+          text: 'Percentage',
+        },
+      },
+    },
   };
 
   return (
@@ -57,10 +95,27 @@ function App() {
       </form>
       {feedback && (
         <div style={{ color: 'white' }}>
-          <h2>Feedback:</h2>
+          <h2>Feedback and:</h2>
           <p>{feedback}</p>
         </div>
       )}
+
+      {similarity_list && similarity_list.length > 0 ? (
+        <div style={{ color: 'white' }}>
+        <h3>Similarity Scores:</h3>
+        <ul>
+          {similarity_list.map((item, index) => (
+            <li key={index}>
+              {Object.keys(item)[0]}: {Object.values(item)[0]}
+            </li>
+
+          ))}
+          <Bar data={chartData} options={chartOptions} />
+        </ul>
+      </div>
+    ) : (
+      <p>No similarity scores available</p>
+    )}
     </div>
   );
 }

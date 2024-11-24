@@ -199,11 +199,11 @@ def compare():
         "cv_keyphrases": cv_keyphrases,
         "feedback": feedback,
         "missing_phrases": missing_phrases,
-        "similarity scores": similarity_list
+        "similarity_list": similarity_list
     }), 200
 @app.after_request
 def after_request(response):
-    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     return response
