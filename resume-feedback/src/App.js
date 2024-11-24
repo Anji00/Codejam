@@ -144,7 +144,7 @@ function App() {
 
         <textarea
           className="input-box"
-          placeholder="Paste your resume text here OR"
+          placeholder="Paste your resume text here"
           value={resumeText}
           onChange={(e) => setResumeText(e.target.value)}
           disabled={!!cv_file}
@@ -199,7 +199,7 @@ function App() {
         </div>
       )}
       {missing_phrases && missing_phrases.length > 0 && (
-  <div style={{ color:'white', marginLeft:'300px', marginRight: '300px'}}>
+  <div style={{ color:'white', marginLeft:'330px', marginRight: '300px'}}>
     <p>
       More specifically, these are the keywords you should think about incorporating somehow into your resume to 
       better match the job description: 
