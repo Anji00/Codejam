@@ -9,7 +9,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 
-
 const toTitleCase = (str) => {
   return str
     .split(' ') // Split the string by spaces
@@ -28,29 +27,42 @@ function App() {
   const [similarity_list, setSimilarity] = useState([]);
   const [missing_phrases, setMissingPhrases] = useState([]);
 
+  const apiClient = axios.create({
+    baseURL: "http://localhost:5001"
+  });
+  
+  // Retry logic
+  apiClient.interceptors.response.use(null, async (error) => {
+    const config = error.config;
+    if (!config._retry) {
+      config._retry = true;
+      console.log("Retrying request...");
+      return apiClient(config); // Retry once
+    }
+    return Promise.reject(error);
+  });
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // const formData = new FormData();
-      // formData.append("cv_info", resumeText);
-      // formData.append("job_desc", jobDesc);
       const data = {
         cv_info: resumeText,
         job_desc: jobDesc
       };
 
-      const response = await axios.post("http://localhost:5001/analyze", data,
+      const response = await apiClient.post("/analyze", data,
         {
           headers: {
             "Content-Type": "application/json", // Ensure the request is sent as JSON
           },
     });
+      console.log("Response:", response.data);
       setSimilarity(response.data.similarity_list);
       setFeedback(response.data.feedback);
       setMissingPhrases(response.data.missing_phrases);
       
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Request failed:", error.message);
       alert("Failed to get feedback. Please try again.");
     }
   };
@@ -132,32 +144,65 @@ function App() {
 )}
 
 
-        <div className="chart-container">
-        {chartData.map((item, index) => (
-           <div key={index} className="chart-card">
-            <div className="chart">
-            <Pie
-              data={{
-                labels: ["Similarity Score"],
-                datasets: [
-                  {
-                    label: `${item.category} Similarity`,
-                    data: item.data,
-                    backgroundColor: ["#36A2EB", "#EDEDED"], // Match the color scheme
-                    borderWidth: 0, // No borders
-                  },
-                ],
-              }}
-              options={chartOptions}
-            />
-            <div className="chart-center">
-                <h2>{item.data[0]}%</h2>
-              </div>
+<div className="chart-container">
+  {chartData.map((item, index) => {
+    const isAboveThreshold = item.data[0] > 50; // Check if the percentage is greater than 50
+    const isOverall = (item.category == "Overall");
+    const isAverage = (item.category == "Average");
+    return (
+      <div key={index} className={`chart-card ${isAboveThreshold ? 'above-50' : 'below-50'}`}>
+        <div className="chart">
+          <Pie
+            data={{
+              labels: [""],
+              datasets: [
+                {
+                  label: ` ${item.category} Similarity `,
+                  data: item.data,
+                  backgroundColor: ["#36A2EB", "#EDEDED"], // Match the color scheme
+                  borderWidth: 0, // No borders
+                },
+              ],
+            }}
+            options={chartOptions}
+          />
+          <div className="chart-center">
+            <h2 style={{ color: isAboveThreshold ? 'green' : 'red' }}>
+              {item.data[0]}%
+            </h2>
           </div>
-          <h5 className="chart-title">{item.category}</h5>
+        </div>
+        <h5 className="chart-title">{item.category}</h5>
+        <div style={{color: '#000', fontSize: 'smaller'}}>
+        <p>
+        {isOverall ? (
+          <p>
+            {isAboveThreshold
+              ? "Your resume looks good overall!"
+              : "Consider improving your resume overall so that it matches the requirements better."}
+          </p>
+            ) : isAverage ? (
+          <p>
+            This is the average of the similarity scores for all the relevant sections in your resume.
+          </p>) 
+          : (
+          <div> 
+            <p>
+              {isAboveThreshold
+                ? "This section matches well with the criteria!"
+                : "Consider improving this section so that it matches the requirements better."}
+            </p>
           </div>
-        ))}
-      </div>
+        )}
+
+        </p>
+
+        </div>
+        </div>
+      
+    );
+  })}
+</div>
     </div>
   );
 }
