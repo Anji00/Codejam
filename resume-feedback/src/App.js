@@ -118,7 +118,8 @@ function App() {
       {missing_phrases && missing_phrases.length > 0 && (
   <div style={{ color:'white'}}>
     <p>
-      Think about incorporating these phrases into your resume to better match the job description: 
+      More specifically, these are the keywords you should think about incorporating somehow into your resume to 
+      better match the job description: 
     </p>
 
     <ul>

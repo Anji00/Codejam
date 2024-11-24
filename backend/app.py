@@ -176,7 +176,7 @@ def compare():
 
     prompt = f"""
     The resume is missing the following key phrases: {missing_phrases}. 
-    Can you give 5 tips to improve the  
+    Can you write sentences that i can include in my resume to include these phrases? 
     """
 
 
