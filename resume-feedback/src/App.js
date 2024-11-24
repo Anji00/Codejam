@@ -14,6 +14,7 @@ function App() {
   const [jobDesc, setJobDesc] = useState("");
   const [feedback, setFeedback] = useState("");
   const [similarity_list, setSimilarity] = useState([]);
+  const [missing_phrases, setMissingPhrases] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +35,8 @@ function App() {
     });
       setSimilarity(response.data.similarity_list);
       setFeedback(response.data.feedback);
-      console.log(similarity_list);
+      setMissingPhrases(response.data.missing_phrases);
+      
     } catch (error) {
       console.error("Error:", error);
       alert("Failed to get feedback. Please try again.");
@@ -81,13 +83,26 @@ function App() {
       </form>
       {feedback && (
         <div style={{ color: 'white' }}>
-          <h2>Feedback and:</h2>
-          <p>{feedback}</p>
+          <h2>Feedback:</h2>
+          <p>You can incorporate the following line to match the keywords
+            in the job description better: </p>
+            <p>{feedback.replace(/[\[\]"]/g, '').trim()}</p>
         </div>
       )}
-
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", color: "white"}}>
+      {missing_phrases && missing_phrases.length > 0 && (
+  <div style={{ color:'white'}}>
+    <h2>Missing Phrases:</h2>
+    <p>
+      Think about incorporating these phrases into your resume to better match the job description: 
+    </p>
+    <ul>
+      {missing_phrases.map((phrase, index) => (
+        <li key={index}>{phrase}</li>
+      ))}
+    </ul>
+  </div>
+)}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", color: "white"}}>
         {chartData.map((item, index) => (
           <div key={index} style={{ width: "200px", margin: "20px" }}>
             <h3>{item.category}</h3>
