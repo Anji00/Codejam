@@ -1,33 +1,16 @@
-.App {
-  text-align: center;
-}
-/*
-@keyframes glowing {
-  0% {
-    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffaa00, 0 0 30px #ffaa00, 0 0 40px #ffaa00, 0 0 50px #ffaa00, 0 0 60px #ffaa00;
-  }
-  50% {
-    text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ffaa00, 0 0 40px #ffaa00, 0 0 50px #ffaa00, 0 0 70px #ffaa00, 0 0 90px #ffaa00;
-  }
-  100% {
-    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffaa00, 0 0 30px #ffaa00, 0 0 40px #ffaa00, 0 0 50px #ffaa00, 0 0 60px #ffaa00;
-  }
-}
-  */
 
-.glowing-title {
-  color: #f9f9f9; /* Bright yellow */
-  font-size: 3rem; /* Large title size */
-  text-align: center;
+.title {
+  color: #27e3dc !important; /* Bright yellow */
+  font-size: 5rem; /* Large title size */
   margin-top: 20px;
-  font-family: 'Poppins', sans-serif;
-  animation: glowing 2s infinite; /* Attach glowing animation */
+  font-family: 'Montserrat', serif !important;
+  font-weight: 600;
 }
 
 body {
   background-color: #1A1A1D !important;
   color: #ffffff;
-  margin: 0;
+  margin: none;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -37,48 +20,52 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /*justify-content: center;*/
   min-height: 100vh;
-  padding: 20px;
+  padding: 10px;
 }
+
+.flex-container {
+  display: flex; /* Use flexbox */
+  justify-content: space-between; /* Add space between rectangles */
+  gap: 40px !important; /* Optional: Set the spacing between rectangles */
+  margin: 50px 0; /* Add some space above and below the container */
+}
+
+.rectangle {
+  display: flex; /* Enable flexbox */
+  flex-direction: column; /* Arrange children vertically */
+  align-items: center; /* Center horizontally */
+  justify-content: center; /* Center vertically */
+}
+
 
 /* Style text areas */
 .input-box {
-  width: 90%;
-  max-width: 500px;
-  height: 150px;
-  margin: 10px 0;
+  margin: 20px;
   padding: 10px;
-  border: 2px solid;
   border-radius: 8px;
-  background-color: #1f1f1f;
-  color: white;
-  font-size: 1rem;
-  resize: none;
+  background-color: #1A1A1D;
+  border: 2px solid #e3dede;
+
+  width: 500px; /* Full width inside the rectangle */
+  height: 250px; /* Text area height */
   outline: none;
+  resize: none; /* Prevent resizing */
+  font-size: 1rem;
+
+}
+
+.clear {
+  margin: 40px;
+}
+
+.submit {
+  margin: 40px;
 }
 
 /* Style button */
-.submit-btn {
-  background-color: #ffcc00;
-  color: #121212;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
 
-.submit-btn:hover {
-  background-color: #ffaa00;
-}
-
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
@@ -86,20 +73,6 @@ body {
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
 
 @keyframes App-logo-spin {
   from {
@@ -115,16 +88,33 @@ body {
 }
 
 
-/* App.css */
-.title {
-  color: #ff006a; /* Bright yellow for dark mode */
-  font-size: 5rem; /* Make it large */
-  text-align: center; /* Center it horizontally */
-  margin-top: 10px;
-  font-family: 'Poppins', sans-serif; /* Stylish font */
-  animation: glowing 2s infinite; /* Add a glowing animation */
+
+/*
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
-/* Glowing animation */
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+
+.App-link {
+  color: #61dafb;
+}
+
+.App {
+  text-align: center;
+}
+*/
+
 
 

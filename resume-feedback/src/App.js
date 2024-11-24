@@ -62,22 +62,33 @@ function App() {
   return (
     <div className="container animate__animated animate__fadeIn">
 
-      {/* Existing Content */}
-      <h1 className="display-5 fw-bold text-white">Perfect Pitch</h1>
+      <h1 className="title">Perfect Pitch</h1>
       <form onSubmit={handleSubmit}>
+      <div className="flex-container">
+      <div className="rectangle">
         <textarea
           className="input-box"
           placeholder="Paste your resume text here..."
           value={resumeText}
           onChange={(e) => setResumeText(e.target.value)}
         />
+        <div>
+        <button className="clear btn btn-lg btn-outline-primary mb-3 me-sm-3 fw-bold" type="clear" >Clear All</button></div>
+      </div>  
+      <div></div>
+      <div></div>
+      <div></div>
+      <div className="rectangle">
         <textarea
           className="input-box"
           placeholder="Paste the job description here..."
           value={jobDesc}
           onChange={(e) => setJobDesc(e.target.value)}
-        />
-        <button className="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold" type="submit">Get Feedback</button>
+        />  
+        <button className="submit btn btn-outline-info btn-lg px-4 mb-3 me-sm-3 fw-bold" type="submit">Get Feedback</button>
+      </div>
+      </div>        
+       
       </form>
       {feedback && (
         <div style={{ color: 'white' }}>
@@ -85,8 +96,6 @@ function App() {
           <p>{feedback}</p>
         </div>
       )}
-
-
           <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", color: "white"}}>
         {chartData.map((item, index) => (
           <div key={index} style={{ width: "200px", margin: "20px" }}>
