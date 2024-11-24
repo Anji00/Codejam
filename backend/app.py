@@ -4,7 +4,7 @@ import PyPDF2
 import requests
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+CORS(app, origins=["http://localhost:3000"])
 
 
 API_KEY = "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"
@@ -178,8 +178,6 @@ def compare():
     The resume is missing the following key phrases: {missing_phrases}. 
     Can you provide feedback on how to align the resume with the job description?  give me a paragraph.
     """
-
-
     flan_t5_payload = {
         "inputs": prompt,
         "parameters": {
@@ -205,9 +203,9 @@ def compare():
     }), 200
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     return response
 if __name__ == "__main__":
-     app.run(debug=True, host='0.0.0.0', port=5000)
+     app.run(debug=True, host='0.0.0.0', port=5001)
