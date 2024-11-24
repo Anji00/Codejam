@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import applicantLogo from './applicant.png';
+import paperclipIcon from './paper-clip.png';
 
 
 // Register the components
@@ -23,6 +24,7 @@ const toTitleCase = (str) => {
 
 
 function App() {
+  const [cv_file, setResumeFile] = useState(null);
   const [resumeText, setResumeText] = useState("");
   const [jobDesc, setJobDesc] = useState("");
   const [feedback, setFeedback] = useState("");
@@ -54,22 +56,44 @@ function App() {
     setSimilarity([]);
     setMissingPhrases([]);
   };
-
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setResumeFile(file); // Set the selected file
+    } else {
+      alert("Please upload a valid PDF file.");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let response;
     try {
+    if (cv_file) {
+      // Handle file upload
+      const formData = new FormData();
+      formData.append("resume_file", cv_file);
+      formData.append("job_desc", jobDesc);
+
+      response = await apiClient.post("/analyze", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // ensure request is sent as form data
+        },
+      });
+     } else if(resumeText){
+    
       const data = {
         cv_info: resumeText,
         job_desc: jobDesc
       };
 
-      const response = await apiClient.post("/analyze", data,
+      response = await apiClient.post("/analyze", data,
         {
           headers: {
             "Content-Type": "application/json", // Ensure the request is sent as JSON
           },
     });
+  }
       console.log("Response:", response.data);
       setSimilarity(response.data.similarity_list);
       setFeedback(response.data.feedback);
@@ -113,11 +137,35 @@ function App() {
       <form onSubmit={handleSubmit}>
       <div className="flex-container">
       <div className="rectangle">
+
+
+      <div className="file-upload">
+      <label htmlFor="resume-upload" className="file-label">
+                <img
+                  src={paperclipIcon}
+                  alt="Attach Resume"
+                  className="paper-clip"
+                />{" "}
+                Attach Resume
+              </label>
+              <input
+                id="resume-upload"
+                type="file"
+                accept=".pdf"
+                onChange={handleFileUpload}
+                style={{ display: "none" }} // Hide the default file input
+              />
+            </div>
+            {cv_file && <p style={{ color: "white" }}>{cv_file.name}</p>}
+
+
+
         <textarea
           className="input-box"
           placeholder="Paste your resume text here"
           value={resumeText}
           onChange={(e) => setResumeText(e.target.value)}
+          disabled={!!cv_file}
         />
         <div>
         <button className="clear btn btn-lg btn-outline-primary mb-3 me-sm-3 fw-bold" type="button"
