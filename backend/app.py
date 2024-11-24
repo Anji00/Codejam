@@ -25,7 +25,7 @@ def extract_text_from_pdf(pdf_file):
 
 def parse(text):
     keywords = [
-        "work experience", "work", "education", "experience", 
+        "work experience", "work", "experience", 
         "work history", "projects", "technical skills", "soft skills", 
         "skills", "skill",
         "languages", "internships", "activities"
@@ -176,8 +176,10 @@ def compare():
 
     prompt = f"""
     The resume is missing the following key phrases: {missing_phrases}. 
-    Can you provide feedback on how to align the resume with the job description?  give me a paragraph.
+    Can you give 5 tips to improve the  
     """
+
+
     flan_t5_payload = {
         "inputs": prompt,
         "parameters": {

@@ -9,6 +9,18 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 
+
+const toTitleCase = (str) => {
+  return str
+    .split(' ') // Split the string by spaces
+    .map((word) =>
+      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() // Capitalize first letter of each word
+    )
+    .join(' '); // Join the words back together with a space
+};
+
+
+
 function App() {
   const [resumeText, setResumeText] = useState("");
   const [jobDesc, setJobDesc] = useState("");
@@ -46,7 +58,7 @@ function App() {
    const chartData = similarity_list.map((item) => {
     const [category, score] = Object.entries(item)[0]; // Extract category and score
     return {
-      category: category,
+      category: toTitleCase(category),
       data: [parseFloat((score * 100).toFixed(2)), 100 - parseFloat((score * 100).toFixed(2))], // Match percentage and remaining percentage
     };
   });
@@ -55,10 +67,13 @@ function App() {
     responsive: true,
     plugins: {
       legend: {
-        display: true,
-        position: 'top',
+        display: false,
+      },
+      tooltil: {
+        enabled: false,
       },
     },
+    cutout: '75%',
   };
 
   return (
@@ -102,21 +117,24 @@ function App() {
       )}
       {missing_phrases && missing_phrases.length > 0 && (
   <div style={{ color:'white'}}>
-    <h2>Missing Phrases:</h2>
     <p>
       Think about incorporating these phrases into your resume to better match the job description: 
     </p>
+
     <ul>
       {missing_phrases.map((phrase, index) => (
         <li key={index}>{phrase}</li>
       ))}
     </ul>
+    <p>Here is a detailed graphical analysis that shows how each section of your resume matches the requirements of this position: </p>
   </div>
 )}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", color: "white"}}>
+
+
+        <div className="chart-container">
         {chartData.map((item, index) => (
-          <div key={index} style={{ width: "200px", margin: "20px" }}>
-            <h3>{item.category}</h3>
+           <div key={index} className="chart-card">
+            <div className="chart">
             <Pie
               data={{
                 labels: ["Similarity Score"],
@@ -124,12 +142,18 @@ function App() {
                   {
                     label: `${item.category} Similarity`,
                     data: item.data,
-                    backgroundColor: ["#36A2EB", "#FFFFFF"]
+                    backgroundColor: ["#36A2EB", "#EDEDED"], // Match the color scheme
+                    borderWidth: 0, // No borders
                   },
                 ],
               }}
               options={chartOptions}
             />
+            <div className="chart-center">
+                <h2>{item.data[0]}%</h2>
+              </div>
+          </div>
+          <h5 className="chart-title">{item.category}</h5>
           </div>
         ))}
       </div>
