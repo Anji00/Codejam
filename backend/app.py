@@ -1,27 +1,33 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from transformers import pipeline
-import os
-from docx import Document
 import PyPDF2
 import requests
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["http://localhost:3000"])
 
-# API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
-API_URL_FLAN_T5 = "https://api-inference.huggingface.co/models/google/flan-t5-large"
+
 API_KEY = "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"
+
+API_URL_SIMILARITY = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
+API_URL_FLAN_T5 = "https://api-inference.huggingface.co/models/google/flan-t5-large"
 API_URL_KEYPHRASE = "https://api-inference.huggingface.co/models/ml6team/keyphrase-extraction-distilbert-inspec"
 
-
-pipe = pipeline("text2text-generation", model="google/flan-t5-large")
-
+def extract_text_from_pdf(pdf_file):
+    try:
+        reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+        return text
+    except Exception as e:
+        return str(e)
 
 def parse(text):
     keywords = [
-        "work experience", "work", "education", "skills", "skill", "experience", 
+        "work experience", "work", "education", "experience", 
         "work history", "projects", "technical skills", "soft skills", 
+        "skills", "skill",
         "languages", "internships", "activities"
     ]
     
@@ -31,8 +37,10 @@ def parse(text):
 
     # Split the text into lines
     lines = text.split("\n")
+    
 
     for line in lines:
+        
         line_lower = line.lower().strip()
 
         # Check if the line matches any of the keywords
@@ -56,29 +64,23 @@ def parse(text):
     # Add the last section to the parsed_sections list
     if field and current_section_content:
         parsed_sections.append({field: " ".join(current_section_content)})
+    # text = "Jane Doe janedoe@email.com | (123) 456-7890 | LinkedIn Profile. Summary Results-oriented Project Manager with 5+ years of experience in delivering successful projects across various industries. Proven ability to lead cross-functional teams, manage complex timelines, and exceed client expectations. Seeking a challenging role to leverage my skills and contribute to organizational growth. Skills: Technical Skills: Project Management, Agile Methodologies, MS Project, Jira, Salesforce. Soft Skills: Leadership, Communication, Problem-Solving, Time Management, Negotiation. Experience: Project Manager - Acme Corporation | New York, NY | 2018-Present. Led and managed complex projects from initiation to closure, ensuring timely delivery and budget adherence. Successfully implemented a new CRM system, resulting in a 20% increase in sales efficiency. Built and mentored high-performing project teams, fostering a collaborative and innovative work environment. Project Coordinator. Global Solutions Inc. | Los Angeles, CA | 2015-2018. Coordinated and tracked project tasks, milestones, and deliverables. Prepared detailed project plans and reports, providing regular updates to stakeholders. Collaborated with cross-functional teams to ensure smooth project execution. Education: Master of Business Administration (MBA)- University of California, Los Angeles | Los Angeles, CA | 2015. Bachelor of Science in Computer Science. California State University, Long Beach | Long Beach, CA | 2013. Certifications: Project Management Professional (PMP) Certified ScrumMaster (CSM). Projects: Enterprise Resource Planning (ERP) Implementation: Led a team of 20+ to successfully implement a new ERP system, improving operational efficiency by 30%.Digital Transformation Project: Managed a cross-functional team to digitize business processes, resulting in a 25% reduction in manual tasks."
+    set_parsed_sections = create_sets(parsed_sections)
+    print(set_parsed_sections)
+    return set_parsed_sections
 
-    return parsed_sections
-
-
-# text = """Work Experience
-# - Software Engineer at XYZ Corp
-# - Developed a machine learning model for fraud detection
-
-# Education
-# - Bachelor of Science in Computer Science
-
-# Skills
-# - Python, Machine Learning, Data Analysis
-
-# Projects
-# - Resume Feedback App: Built a web application using Flask and React"""
-
-parsed_sections = parse(text)
-print("Parsed Sections:")
-for section in parsed_sections:
-    print(section)
-
-
+def create_sets(parsed_sections):
+    set_parsed_section=[]
+    for item in parsed_sections:
+        for key, value in item.items():
+            existing_entry = next((entry for entry in set_parsed_section if key in entry), None)
+            if existing_entry:
+                # Append the value to the existing key, ensuring it's concatenated
+                existing_entry[key] += f" {value}"
+            else:
+                # Add a new dictionary with the key and value
+                set_parsed_section.append({key: value})
+    return set_parsed_section
 
 def query_huggingface_api(api_url, payload):
     headers = {"Authorization": f"Bearer {API_KEY}"}
@@ -91,10 +93,22 @@ def query_huggingface_api(api_url, payload):
 
 @app.route('/analyze', methods=['POST'])
 def compare():
+    # Check if a file is uploaded
+    if 'cv_file' in request.files:
+        cv_file = request.files['cv_file']
 
-    cv_info = request.json.get('cv')
-    job_description = request.json.get('job_desc')
+        # Ensure it's a PDF file
+        if cv_file.filename.split('.')[-1].lower() != 'pdf':
+            return jsonify({"error": "Only PDF files are supported"}), 400
 
+        # Extract text from the PDF
+        cv_info = extract_text_from_pdf(cv_file)
+        job_description = request.form.get('job_desc')
+    else:
+        cv_info = request.json.get('cv_info')
+        job_description = request.json.get('job_desc')
+    
+    parsed_cv = parse(cv_info)
     if not cv_info or not job_description:
         return jsonify({"error": "Both 'cv' and 'job_desc' fields are required"}), 400
 
@@ -106,30 +120,55 @@ def compare():
 
     job_desc_keyphrases = []
     for item in job_desc_response:
-        print(item)
-        if ((item['word'] != '' or item['word'] != NULL)):  # Beginning of a keyphrase
+#        print("Item Type:", type(item), "Item Content:", item)
+        if (item['word'] != ''):  # Beginning of a keyphrase
             job_desc_keyphrases.append(item['word'])
     
-    # Step 2: Extract key phrases from CV
-    cv_payload = {
-         "inputs": cv_info
-    }
-    cv_response = query_huggingface_api(API_URL_KEYPHRASE, cv_payload)
-
     cv_keyphrases = []
-    for item in cv_response:
-        print(item)
-        if ((item['word'] != '' or item['word'] != NULL)):  # Beginning of a keyphrase
-            cv_keyphrases.append(item['word'])
+    similarity_list = []
+    for x in parsed_cv:
+        for key, value in x.items():
+            cv_payload = {
+                "inputs": value
+            }
+            similarity_payload = {
+                "source_sentence": job_description,
+                "sentences": [value]
+            }
+            cv_response = query_huggingface_api(API_URL_KEYPHRASE, cv_payload)
 
+            
+            similarity_response = query_huggingface_api(API_URL_SIMILARITY, similarity_payload)
 
-    # Print the raw API response
-    print("Raw API Response for CV Key Phrases:")
-    print(cv_response)
-   
-    if "error" in cv_response:
-        return jsonify({"error": cv_response["error"]}), 500
-    print(cv_response)
+            if "error" in similarity_response:
+                return jsonify({"error": similarity_response["error"]}), 500
+            if "error" in cv_response:
+                return jsonify({"error": cv_response["error"]}), 500
+            
+            # to get the keyphrases from each section 
+            for response in cv_response:
+                if response['word'] != '':
+                    cv_keyphrases.append(response['word'])
+
+            similarity_score = similarity_response[0] 
+            current_dict = {key: similarity_score}
+            similarity_list.append(current_dict)
+            print("Similarity score:", similarity_score)
+
+    # calculate overall score
+    similarity_payload = {
+                "source_sentence": job_description,
+                "sentences": [cv_info]
+            }
+    
+    scores = [list(entry.values())[0] for entry in similarity_list]  
+    average_similarity_score = sum(scores) / len(scores) if scores else 0
+    similarity_list.append({"Average": average_similarity_score})
+
+    similarity_response = query_huggingface_api(API_URL_SIMILARITY, similarity_payload)
+    similarity_score = similarity_response[0] 
+    similarity_list.append({"Overall": similarity_score})
+
 
     # Calculate missing phrases
     missing_phrases = [phrase for phrase in job_desc_keyphrases if phrase not in cv_keyphrases]
@@ -139,23 +178,6 @@ def compare():
     The resume is missing the following key phrases: {missing_phrases}. 
     Can you provide feedback on how to align the resume with the job description?  give me a paragraph.
     """
-
-
-    # return jsonify({
-    #     "job_desc_keyphrases": job_desc_keyphrases,
-    #      "cv_keyphrases": cv_keyphrases,
-    #     "missing_phrases": missing_phrases
-    # }), 200 
-
-
-    # prompt = f"""
-    # The job description includes the following key phrases: {job_desc_keyphrases}. 
-    # Compare this with the resume, which includes the following key phrases: {cv_keyphrases}. 
-    # Identify which key phrases from the job description are not mentioned in the resume.
-    # List these missing phrases clearly.
-    # """
-
-
     flan_t5_payload = {
         "inputs": prompt,
         "parameters": {
@@ -176,8 +198,14 @@ def compare():
         "job_desc_keyphrases": job_desc_keyphrases,
         "cv_keyphrases": cv_keyphrases,
         "feedback": feedback,
-        "missing_phrases": missing_phrases
+        "missing_phrases": missing_phrases,
+        "similarity_list": similarity_list
     }), 200
-
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    return response
 if __name__ == "__main__":
-    app.run(debug=True)
+     app.run(debug=True, host='0.0.0.0', port=5001)
