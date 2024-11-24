@@ -4,6 +4,8 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import applicantLogo from './applicant.png';
+
 
 // Register the components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -27,6 +29,7 @@ function App() {
   const [similarity_list, setSimilarity] = useState([]);
   const [missing_phrases, setMissingPhrases] = useState([]);
 
+
   const apiClient = axios.create({
     baseURL: "http://localhost:5001"
   });
@@ -42,6 +45,17 @@ function App() {
     return Promise.reject(error);
   });
   
+
+  const handleClear = () => {
+    // Clear both text areas by resetting their state
+    setResumeText("");
+    setJobDesc("");
+    setFeedback("");
+    setSimilarity([]);
+    setMissingPhrases([]);
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -90,19 +104,24 @@ function App() {
 
   return (
     <div className="container animate__animated animate__fadeIn">
-
+      <div className="top">
+      <img src={applicantLogo} alt="website-resume-logo"></img>
       <h1 className="title">Perfect Pitch</h1>
+      </div>
+      <h4>Empowering job seekers with personalized feedback, <br></br>
+      This website optimizes your resume using data-driven insights to help you land your dream job!</h4>
       <form onSubmit={handleSubmit}>
       <div className="flex-container">
       <div className="rectangle">
         <textarea
           className="input-box"
-          placeholder="Paste your resume text here..."
+          placeholder="Paste your resume text here"
           value={resumeText}
           onChange={(e) => setResumeText(e.target.value)}
         />
         <div>
-        <button className="clear btn btn-lg btn-outline-primary mb-3 me-sm-3 fw-bold" type="clear" >Clear All</button></div>
+        <button className="clear btn btn-lg btn-outline-primary mb-3 me-sm-3 fw-bold" type="button"
+                onClick={handleClear} >Clear All</button></div>
       </div>  
       <div></div>
       <div></div>
@@ -110,7 +129,7 @@ function App() {
       <div className="rectangle">
         <textarea
           className="input-box"
-          placeholder="Paste the job description here..."
+          placeholder="Paste the job description here"
           value={jobDesc}
           onChange={(e) => setJobDesc(e.target.value)}
         />  
@@ -135,11 +154,15 @@ function App() {
     </p>
 
     <ul>
+      <div style={{textAlign: 'center'}}>
       {missing_phrases.map((phrase, index) => (
         <li key={index}>{phrase}</li>
       ))}
+      </div>
     </ul>
+    <div style={{textAlign: 'center'}}>
     <p>Here is a detailed graphical analysis that shows how each section of your resume matches the requirements of this position: </p>
+    </div>
   </div>
 )}
 
