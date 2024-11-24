@@ -136,17 +136,22 @@ function App() {
       This website optimizes your resume using data-driven insights to help you land your dream job!</h4>
       <form onSubmit={handleSubmit}>
       <div className="flex-container">
-      <div className="rectangle">
+      <div className="rectangle" style={{}}>
 
+        <textarea
+          className="input-box"
+          placeholder="Paste your resume text here OR"
+          value={resumeText}
+          onChange={(e) => setResumeText(e.target.value)}
+          disabled={!!cv_file}
+          style={{marginTop: '30px'}}
+        />
 
-      <div className="file-upload">
-      <label htmlFor="resume-upload" className="file-label">
-                <img
-                  src={paperclipIcon}
-                  alt="Attach Resume"
-                  className="paper-clip"
+      <div className="file-upload" style={{alignContent:"end"}}>
+        <label style={{ color: "#ffffff", fontSize: '15px' }} htmlFor="resume-upload" className="file-label" >
+                <img className="clip" src={paperclipIcon} alt="Attach Resume icon"
                 />{" "}
-                Attach Resume
+                Attach Resume as a PDF
               </label>
               <input
                 id="resume-upload"
@@ -158,30 +163,25 @@ function App() {
             </div>
             {cv_file && <p style={{ color: "white" }}>{cv_file.name}</p>}
 
-
-
-        <textarea
-          className="input-box"
-          placeholder="Paste your resume text here"
-          value={resumeText}
-          onChange={(e) => setResumeText(e.target.value)}
-          disabled={!!cv_file}
-        />
         <div>
         <button className="clear btn btn-lg btn-outline-primary mb-3 me-sm-3 fw-bold" type="button"
                 onClick={handleClear} >Clear All</button></div>
-      </div>  
+      </div> 
+
       <div></div>
       <div></div>
       <div></div>
-      <div className="rectangle">
+      <div className="rectangle" style={{}}>
         <textarea
           className="input-box"
           placeholder="Paste the job description here"
           value={jobDesc}
           onChange={(e) => setJobDesc(e.target.value)}
-        />  
-        <button className="submit btn btn-outline-info btn-lg px-4 mb-3 me-sm-3 fw-bold" type="submit">Get Feedback</button>
+        /> 
+        <div></div> 
+        <div></div>
+        <div>
+        <button style={{marginTop: '53px'}}className="submit btn btn-outline-info btn-lg px-4 mb-3 me-sm-3 fw-bold" type="submit">Get Feedback</button></div>
       </div>
       </div>        
        
