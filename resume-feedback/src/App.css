@@ -30,6 +30,11 @@ img {
   height: 70px;
 }
 
+.clip {
+  width: 20px;
+  height: 20px;
+}
+
 /* Center container */
 .container {
   display: flex;
