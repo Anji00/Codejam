@@ -1,3 +1,7 @@
+.App {
+  text-align: center;
+}
+
 
 .title {
   color: #27e3dc !important; /* Bright yellow */
@@ -32,6 +36,7 @@ body {
   margin: 50px 0; /* Add some space above and below the container */
 }
 
+
 .rectangle {
   display: flex; /* Enable flexbox */
   flex-direction: column; /* Arrange children vertically */
@@ -39,23 +44,20 @@ body {
   justify-content: center; /* Center vertically */
 }
 
-
-/* Style text areas */
 .input-box {
+  width: 500px; /* Full width inside the rectangle */
+  height: 250px; /* Text area height */
   margin: 20px;
   padding: 10px;
   border-radius: 8px;
-  background-color: #1A1A1D;
   border: 2px solid #e3dede;
-
-  width: 500px; /* Full width inside the rectangle */
-  height: 250px; /* Text area height */
+  background-color: #1A1A1D;
+  color: white;
+  font-size: 1rem;
   outline: none;
   resize: none; /* Prevent resizing */
-  font-size: 1rem;
 
 }
-
 .clear {
   margin: 40px;
 }
@@ -115,6 +117,4 @@ body {
   text-align: center;
 }
 */
-
-
 
