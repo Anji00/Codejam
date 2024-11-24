@@ -96,8 +96,6 @@ function App() {
           <p>{feedback}</p>
         </div>
       )}
-
-
           <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", color: "white"}}>
         {chartData.map((item, index) => (
           <div key={index} style={{ width: "200px", margin: "20px" }}>
