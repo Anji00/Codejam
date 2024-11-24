@@ -2,10 +2,11 @@ import './App.css';
 import React, { useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+// Register the components
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 
 function App() {
@@ -39,19 +40,14 @@ function App() {
       alert("Failed to get feedback. Please try again.");
     }
   };
-  // Prepare data for the chart
-  const chartData = {
-    labels: similarity_list.map((item) => Object.keys(item)[0]), // Extract keys (categories)
-    datasets: [
-      {
-        label: 'Similarity Percentage',
-        data: similarity_list.map((item) => (Object.values(item)[0] * 100).toFixed(2)), // Convert scores to percentages
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
+   // Prepare data for individual pie charts
+   const chartData = similarity_list.map((item) => {
+    const [category, score] = Object.entries(item)[0]; // Extract category and score
+    return {
+      category: category,
+      data: [parseFloat((score * 100).toFixed(2)), 100 - parseFloat((score * 100).toFixed(2))], // Match percentage and remaining percentage
+    };
+  });
 
   const chartOptions = {
     responsive: true,
@@ -59,16 +55,6 @@ function App() {
       legend: {
         display: true,
         position: 'top',
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 100, // Max percentage
-        title: {
-          display: true,
-          text: 'Percentage',
-        },
       },
     },
   };
@@ -100,22 +86,27 @@ function App() {
         </div>
       )}
 
-      {similarity_list && similarity_list.length > 0 ? (
-        <div style={{ color: 'white' }}>
-        <h3>Similarity Scores:</h3>
-        <ul>
-          {similarity_list.map((item, index) => (
-            <li key={index}>
-              {Object.keys(item)[0]}: {Object.values(item)[0]}
-            </li>
 
-          ))}
-          <Bar data={chartData} options={chartOptions} />
-        </ul>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", color: "white"}}>
+        {chartData.map((item, index) => (
+          <div key={index} style={{ width: "200px", margin: "20px" }}>
+            <h3>{item.category}</h3>
+            <Pie
+              data={{
+                labels: ["Similarity Score"],
+                datasets: [
+                  {
+                    label: `${item.category} Similarity`,
+                    data: item.data,
+                    backgroundColor: ["#36A2EB", "#FFFFFF"]
+                  },
+                ],
+              }}
+              options={chartOptions}
+            />
+          </div>
+        ))}
       </div>
-    ) : (
-      <p>No similarity scores available</p>
-    )}
     </div>
   );
 }
