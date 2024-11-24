@@ -22,7 +22,6 @@ const toTitleCase = (str) => {
 };
 
 
-
 function App() {
   const [cv_file, setResumeFile] = useState(null);
   const [resumeText, setResumeText] = useState("");
@@ -57,9 +56,9 @@ function App() {
     setMissingPhrases([]);
   };
   const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type === "application/pdf") {
-      setResumeFile(file); // Set the selected file
+    const cv_file = event.target.files[0];
+    if (cv_file && cv_file.type === "application/pdf") {
+      setResumeFile(cv_file);
     } else {
       alert("Please upload a valid PDF file.");
     }
@@ -70,9 +69,10 @@ function App() {
     let response;
     try {
     if (cv_file) {
+      
       // Handle file upload
       const formData = new FormData();
-      formData.append("resume_file", cv_file);
+      formData.append("cv_file", cv_file);  
       formData.append("job_desc", jobDesc);
 
       response = await apiClient.post("/analyze", formData, {
@@ -94,6 +94,10 @@ function App() {
           },
     });
   }
+      else {
+        // Handle case where neither file nor text is provided
+        console.error("No resume or text provided");
+      }
       console.log("Response:", response.data);
       setSimilarity(response.data.similarity_list);
       setFeedback(response.data.feedback);
@@ -190,7 +194,7 @@ function App() {
         <div style={{ color: 'white', marginLeft:'300px', marginRight: '300px'}}>
           <h2>Feedback:</h2>
           <p>You can incorporate the following line to match the keywords
-            in the job description better ajhiduegwliuqheiuhhujeiwqyiliqrui2euiew2hdliu: </p>
+            in the job description better: </p>
             <p>{feedback.replace(/[\[\]"]/g, '').trim()}</p>
         </div>
       )}
